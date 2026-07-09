@@ -12,9 +12,18 @@
 
 - **Windows 10 or 11** (x64 or ARM64)
 - **VS Code** with the **GitHub Copilot Chat** extension
-- **GitHub Copilot license** (via your GitHub account)
+- A **GitHub account** (`gh auth login`)
+- **GitHub Copilot** recommended — **any plan** (Individual/Pro/Business/Enterprise)
 
 That's it. Python, GitHub CLI, and Azure resources are all installed or handled automatically.
+
+> **On the model backend:** Sidekick calls the **GitHub Copilot API** (Claude +
+> GPT models) using your `gh` token — this needs an active Copilot plan, *not*
+> specifically Enterprise. If you have **no Copilot plan**, calls automatically
+> fall back to the **free GitHub Models API** (any GitHub account); it works but
+> is rate-limited and lower quality for a busy live meeting. No key or config is
+> needed either way.
+
 
 ---
 
