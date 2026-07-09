@@ -1,0 +1,28 @@
+{
+  // Sidekick MCP server — copy this file to .vscode/mcp.json in your workspace.
+  //
+  // Option A: uvx (zero-install — requires uv: https://docs.astral.sh/uv/)
+  // Option B: Direct Python (requires pip install)
+  //
+  // Pick ONE of the server entries below and delete the other.
+
+  "servers": {
+
+    // --- Option A: uvx (recommended) ---
+    "sidekick": {
+      "command": "uvx",
+      "args": ["--from", "sidekick-copilot[live]", "sidekick", "serve"]
+    }
+
+    // --- Option B: Direct Python ---
+    // "sidekick": {
+    //   "command": "powershell",
+    //   "args": [
+    //     "-NoProfile",
+    //     "-Command",
+    //     "$env:GITHUB_TOKEN = (gh auth token); python -m sidekick.server"
+    //   ]
+    // }
+
+  }
+}

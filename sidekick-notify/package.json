@@ -1,0 +1,71 @@
+{
+  "name": "sidekick-notify",
+  "displayName": "Sidekick Notify",
+  "description": "Toast notifications for Sidekick meeting findings",
+  "version": "0.7.1",
+  "publisher": "koladimeji",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sidekick",
+          "title": "Sidekick",
+          "icon": "media/sidekick.svg"
+        }
+      ]
+    },
+    "views": {
+      "sidekick": [
+        {
+          "id": "sidekickFeed",
+          "name": "Feed"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sidekick-notify.showStatus",
+        "title": "Sidekick: Show Status"
+      },
+      {
+        "command": "sidekick-notify.openFeed",
+        "title": "Sidekick: Open Feed"
+      },
+      {
+        "command": "sidekick-notify.clearSeen",
+        "title": "Sidekick: Clear Seen",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "sidekick-notify.researchInChat",
+        "title": "Sidekick: Research in Chat"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sidekick-notify.clearSeen",
+          "when": "view == sidekickFeed",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "tsc -p ./ && node --test out/feedModel.test.js",
+    "package": "npx @vscode/vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "@vscode/vsce": "^3.0.0"
+  }
+}

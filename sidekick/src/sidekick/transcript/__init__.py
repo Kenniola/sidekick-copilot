@@ -1,0 +1,1 @@
+"""Sidekick transcript subpackage."""

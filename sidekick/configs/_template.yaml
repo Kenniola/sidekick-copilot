@@ -1,0 +1,80 @@
+# Sidekick — Customer Profiles
+# Each top-level key is a profile name. Only override what differs.
+# Everything else inherits from the built-in defaults.
+#
+# Usage: @sidekick listen --config acme
+# Full config reference: https://github.com/Kenniola/sidekick-copilot#configuration
+
+acme:
+  customer: Acme Corp
+  consultant: Your Name
+  description: "Data platform migration and Power BI modernisation"
+
+  # Uncomment to add customer-specific domains (defaults: Fabric, Power BI, Azure Data Platform)
+  # domains:
+  #   - Microsoft Fabric
+  #   - Power BI
+  #   - Azure Data Platform
+  #   - AWS S3 Integration
+
+  # Uncomment to add trigger patterns that route to research/sizing pipelines
+  # triggers:
+  #   client_topics:
+  #     - pattern: "migration|move to Fabric|Synapse"
+  #       action: research
+  #     - pattern: "cost|pricing|budget|SKU|capacity"
+  #       action: sizing
+
+  # Uncomment to customise analyst rules
+  # rules:
+  #   - Always distinguish GA vs Preview features
+  #   - Cite sources for every claim
+
+  # Uncomment to seed the speech-to-text vocabulary with this engagement's
+  # proper nouns (project/team/product names). Recognised from the first chunk
+  # — the strongest single lever for transcribing names correctly.
+  # glossary:
+  #   - Northwind
+  #   - OneLake
+  #   - Contoso Analytics
+  #   - Contoso Portal
+
+  # Uncomment to correct speech-to-text mishears specific to this customer.
+  # Left = what Whisper tends to hear, right = the intended term.
+  # stt_corrections:
+  #   "on lake": "OneLake"
+  #   "data verse": "Dataverse"
+  #   "power bee eye": "Power BI"
+
+  # Uncomment to attribute speech to "(me)" vs "(remote)" by also capturing
+  # your microphone (default: system audio only, tagged "(audio)").
+  # speech:
+  #   capture_microphone: true
+  #   chunk_seconds: 5              # longer (e.g. 8) = more context, fewer cuts, more latency
+  #   vad_min_silence_ms: 500      # Silero VAD silence gap before splitting
+  #   no_speech_threshold: 0.6     # drop segments Whisper thinks are non-speech
+  #   log_prob_threshold: -1.0     # drop low-confidence decodes
+  #   compression_ratio_threshold: 2.4  # drop repetitive/hallucinated decodes
+  #   echo_suppression: true       # de-dup speaker bleed across mic + loopback
+  #   speaker_naming: true         # name transcript lines from the roster at stop (post-call)
+
+  # Uncomment to state the engagement objectives the relevance adjudicator
+  # scores questions against. If omitted, set them live at call start with an
+  # add_context "goal: …" note, or Sidekick infers them from the opening
+  # few minutes.
+  # objectives:
+  #   - De-risk the F64 capacity sizing for the overnight Spark load
+  #   - Land the S3 shortcut PoC with the client's security team
+
+  # Accuracy pipeline (Phase 1). Two-stage: a fast per-chunk detector feeds a
+  # periodic deep-tier adjudicator that surfaces only the few most relevant
+  # questions — trading a little latency for higher precision and far fewer
+  # notifications. All off by default.
+  # sensitivity:
+  #   accuracy_mode: true               # enable the two-stage pipeline
+  #   adjudicator_interval_seconds: 40  # deep-pass cadence ceiling (lower = snappier)
+  #   adjudicator_pause_flush: true     # surface urgent hedges without waiting the interval
+  #   max_surfaced_per_pass: 3          # hard cap on items surfaced per pass
+  #   surface_threshold: 0.7            # precision gate (higher = stricter)
+  #   answer_tier: auto                 # "deep" forces deep-model answers (accuracy_mode implies deep)
+  #   self_critique: false              # draft -> critique -> refine (higher accuracy, ~2x latency)

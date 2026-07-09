@@ -1,0 +1,96 @@
+# Sidekick — Base configuration
+# Customer configs inherit from this file. Only override what differs.
+
+customer: General
+description: "Default configuration - template for new customers"
+
+consultant: []               # Add your name: "Your Name" or ["Name1", "Name2"]
+client: ["*"]
+
+domains:
+  - Microsoft Fabric
+  - Power BI
+  - Azure Data Platform
+
+sensitivity:
+  trigger_threshold: 0.5
+  noise_filter: medium
+  analyst_interval_seconds: 10
+  verify_consultant_answers: true
+  show_verifications: corrections_only
+
+queue:
+  fast_lane_max: 3
+  standard_lane_max: 2
+  deep_lane_max: 1
+  stale_expiry_minutes: 5
+
+phases:
+  opening_minutes: 5
+  wrapup_keywords:
+    - "next steps"
+    - "action items"
+    - "to summarise"
+    - "wrap up"
+    - "before we go"
+
+triggers:
+  client_topics: []
+  consultant_hedges:
+    - "I'll get back to you"
+    - "I'll have to check"
+    - "let me verify"
+    - "let me confirm"
+    - "I'm not 100% sure"
+    - "that's a good question"
+
+grounding:
+  repo_paths:
+    - ".github/instructions/"
+  microsoft_learn: true
+
+output:
+  auto_save: true
+  include_session_summary: true
+
+notifications:
+  # Sound played when a finding is surfaced. Windows only — silently
+  # no-ops on macOS/Linux. Options:
+  #   silent       — no sound
+  #   chime        — standard Windows notification (default, subtle)
+  #   asterisk     — Windows "Information" chime
+  #   exclamation  — Windows "Attention" chime
+  #   beep         — legacy 800 Hz / 200 ms square-wave tone (loud)
+  sound: chime
+
+speech:
+  backend: whisper                     # local Whisper is the only supported backend
+  language: en-GB                      # informational (Whisper uses "en")
+  model: small.en                      # base.en | small.en | medium.en | large-v3
+  compute_type: int8                   # int8 | int8_float16 | float16 | float32
+
+# LLM model fallback chains per tier (global — not per-customer).
+# Each entry is "provider:model"; the first is tried first, the rest are
+# fallbacks. Providers: copilot (Copilot API) | github_models (GitHub Models).
+# Quick override without editing this file: set SIDEKICK_MODEL_<TIER>, e.g.
+#   SIDEKICK_MODEL_DEEP="copilot:claude-opus-4.8,copilot:gpt-4.1"
+models:
+  fast:                                # classifier, quick decisions
+    - copilot:gpt-4o-mini
+    - github_models:gpt-4.1-mini
+  standard:                            # research, synthesis, suggest
+    - copilot:claude-opus-4.8
+    - copilot:claude-sonnet-4.5
+    - copilot:gpt-4.1
+    - github_models:gpt-4.1-mini
+  deep:                                # complex research, prototypes
+    - copilot:claude-opus-4.8
+    - copilot:claude-opus-4.7
+    - copilot:claude-opus-4.6
+    - copilot:gpt-4.1
+    - github_models:DeepSeek-R1
+
+rules:
+  - Always distinguish GA vs Preview features
+  - Cite sources for every claim
+  - State uncertainty explicitly

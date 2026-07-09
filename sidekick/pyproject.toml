@@ -1,0 +1,43 @@
+[project]
+name = "sidekick-copilot"
+version = "0.3.0"
+description = "Real-time meeting co-pilot MCP server for GitHub Copilot"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "httpx>=0.27.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "ddgs>=6.0",
+]
+
+[project.scripts]
+sidekick = "sidekick.cli:main"
+
+[project.optional-dependencies]
+live = [
+    "numpy>=1.24.0",
+    "faster-whisper>=1.0.0",
+    "PyAudioWPatch>=0.2.12",
+    "Pillow>=10.0.0",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+all = [
+    "sidekick-copilot[live,dev]",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sidekick"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"configs/default.yaml" = "sidekick/configs/default.yaml"
+"configs/_template.yaml" = "sidekick/configs/_template.yaml"
+"src/sidekick/extensions/sidekick-notify.vsix" = "sidekick/extensions/sidekick-notify.vsix"

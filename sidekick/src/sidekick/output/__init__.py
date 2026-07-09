@@ -1,0 +1,1 @@
+"""Sidekick output subpackage."""
