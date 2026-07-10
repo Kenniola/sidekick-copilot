@@ -308,7 +308,7 @@ Anchor your response to the customer's specific context where possible. \
 Cite the URLs from web results where they support your answer."""
 
         # Scope the system prompt to actual domains being discussed
-        domain_scope = ", ".join(domains) if domains else "Microsoft Fabric"
+        domain_scope = ", ".join(domains) if domains else "the customer's technology stack"
         system_prompt = SYNTHESIS_SYSTEM_PROMPT.format(domain_scope=domain_scope)
 
         if self_critique:
@@ -442,7 +442,7 @@ Cite the URLs from web results where they support your answer."""
         filler. This distills them into 3-6 keyword phrases that work
         well with MS Learn search and file keyword matching.
         """
-        domain_hint = ", ".join(domains) if domains else "Microsoft Fabric"
+        domain_hint = ", ".join(domains) if domains else "general technology"
         try:
             rewritten = await call_llm(
                 system_prompt=(

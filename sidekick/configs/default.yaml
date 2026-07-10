@@ -9,11 +9,10 @@ client: ["*"]
 
 # Default domain focus. A SOFT PRIOR that biases speech-to-text vocabulary and
 # research/analyst context — NOT a filter (Sidekick still handles any topic).
-# Override per profile for your field, e.g. domains: [Security, AWS].
-domains:
-  - Microsoft Fabric
-  - Power BI
-  - Azure Data Platform
+# Left empty by default: Sidekick auto-detects the domains from the opening
+# minutes. Set your field per profile to prime it from the first word, e.g.
+#   domains: [Microsoft Fabric, Power BI]   or   domains: [Security, AWS]
+domains: []
 
 sensitivity:
   trigger_threshold: 0.5

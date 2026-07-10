@@ -72,9 +72,10 @@ Open **VS Code** → open **Copilot Chat** (`Ctrl+Shift+I`) → type:
 
 ## Configuration
 
-Everything lives in `~/.sidekick/customers.yaml`. Each top-level key is a
-**profile** (select with `--config <name>`). Profiles **inherit** the bundled
-`default.yaml` and override only what you set — so most profiles are 3–4 lines.
+Everything lives in `~/.sidekick/customers.yaml` (on Windows, `~/.sidekick/` =
+`C:\Users\<you>\.sidekick\`). Each top-level key is a **profile** (select with
+`--config <name>`). Profiles **inherit** the bundled `default.yaml` and override
+only what you set — so most profiles are 3–4 lines.
 
 ### What you actually need to set
 

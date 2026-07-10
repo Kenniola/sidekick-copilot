@@ -284,9 +284,7 @@ class SidekickConfig:
     description: str = ""
     consultant_names: list[str] = field(default_factory=list)
     client_names: list[str] = field(default_factory=list)
-    domains: list[str] = field(default_factory=lambda: [
-        "Microsoft Fabric", "Power BI", "Azure Data Platform",
-    ])
+    domains: list[str] = field(default_factory=list)
     # Per-customer proper nouns / product / project / team names. Seeded into
     # the Whisper vocabulary prior at high weight so they are recognised from
     # the first chunk, before in-session adaptation has anything to learn from.
@@ -484,7 +482,7 @@ def _parse_config(raw: dict) -> SidekickConfig:
         description=raw.get("description", ""),
         consultant_names=consultant,
         client_names=client,
-        domains=raw.get("domains", ["Microsoft Fabric", "Power BI", "Azure Data Platform"]),
+        domains=raw.get("domains", []),
         glossary=[str(t).strip() for t in (raw.get("glossary") or []) if str(t).strip()],
         stt_corrections={
             str(k): str(v)
