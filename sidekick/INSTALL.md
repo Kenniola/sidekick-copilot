@@ -70,6 +70,111 @@ Open **VS Code** → open **Copilot Chat** (`Ctrl+Shift+I`) → type:
 
 ---
 
+## Configuration
+
+Everything lives in `~/.sidekick/customers.yaml`. Each top-level key is a
+**profile** (select with `--config <name>`). Profiles **inherit** the bundled
+`default.yaml` and override only what you set — so most profiles are 3–4 lines.
+
+### What you actually need to set
+
+```yaml
+myproject:
+  customer: Acme Corp                 # shown in summaries / deliverables
+  consultant: Your Name               # your name(s) — used for speaker attribution
+  description: "Fabric migration"     # one line; seeds context + STT vocabulary
+```
+
+Everything else is optional. The two biggest accuracy wins to add next:
+
+```yaml
+  glossary: [OneLake, Contoso Analytics]   # proper nouns to transcribe correctly
+  domains: [Microsoft Fabric, PostgreSQL]  # bias vocabulary + research to your field
+```
+
+### Full toggle reference
+
+Grouped by block. All are optional; the value shown is the **default**.
+
+**Top level**
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `customer` | `General` | Name used in summaries, deliverables, and the output folder. |
+| `consultant` | – | Your name(s). Roster for post-call speaker naming. |
+| `client` | `["*"]` | Client attendee names — improves speaker attribution. |
+| `description` | – | One-line engagement summary; seeds context + STT vocabulary. |
+| `domains` | Fabric, Power BI, Azure Data Platform | **Soft prior** — biases STT vocabulary and research/analyst context. Not a filter; Sidekick still discusses anything. Override for your field. |
+| `glossary` | – | Proper nouns / product / project names seeded into the Whisper prior so they're transcribed correctly from the first word. Strongest single accuracy lever. |
+| `stt_corrections` | – | `"misheard": "correct"` map for stubborn homophones a glossary can't fix. |
+| `objectives` | auto-inferred | Goals the relevance adjudicator scores against. Left empty, inferred from the opening minutes. |
+| `rules` | 3 defaults | Guidance appended to the analyst / research prompts. |
+
+**`sensitivity`** — how much Sidekick surfaces
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `accuracy_mode` | `true` | Two-stage pipeline: a fast detector proposes candidates, a periodic deep-tier adjudicator surfaces only the few most relevant. Higher precision, slight latency. `false` = older high-recall (noisier) mode. |
+| `auto_suggest` | `true` | Occasionally surfaces one high-impact question to ask the client (an `[ask]` card). |
+| `auto_suggest_interval_seconds` | `120` | Minimum gap between auto-suggestions. |
+| `adjudicator_interval_seconds` | `40` | How often the deep adjudicator runs (lower = snappier, more model calls). |
+| `adjudicator_pause_flush` | `true` | Surface an urgent hedge immediately without waiting for the interval. |
+| `max_surfaced_per_pass` | `3` | Hard cap on findings surfaced per adjudicator pass. |
+| `surface_threshold` | `0.7` | Precision gate (0–1); higher = stricter, fewer findings. |
+| `answer_tier` | `auto` | `deep` forces deep-model answers everywhere (accuracy_mode already implies deep). |
+| `self_critique` | `false` | Draft → critique → refine each answer. Higher accuracy, ~2× latency. |
+| `analyst_interval_seconds` | `10` | How often the transcript is classified. |
+| `verify_consultant_answers` | `true` | Fact-check statements the consultant makes. |
+| `show_verifications` | `corrections_only` | `all` / `corrections_only` / `none`. |
+| `trigger_threshold` | `0.5` | Minimum classifier score to consider an item (high-recall path). |
+
+**`speech`** — local Whisper transcription (see [Speech-to-Text](#speech-to-text) for detail)
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `model` | `small.en` | `base.en` / `small.en` / `medium.en` / `large-v3`. Bigger = more accurate, slower. |
+| `compute_type` | `int8` | `int8` / `int8_float16` / `float16` / `float32`. |
+| `device` | `auto` | `auto` / `cpu` / `cuda` (GPU via CUDA). |
+| `capture_microphone` | `false` | Also record your mic, tagging lines `(me)` vs `(remote)` for attribution. |
+| `speaker_naming` | `true` | Post-call, name transcript lines from the roster + intros. |
+| `chunk_seconds` | `5` | Audio chunk length. Longer = more context, fewer cuts, more latency. |
+| `vad_min_silence_ms` | `500` | Silence gap before splitting a chunk. |
+| `no_speech_threshold` | `0.6` | Drop segments Whisper thinks are non-speech. |
+| `log_prob_threshold` | `-1.0` | Drop low-confidence decodes. |
+| `compression_ratio_threshold` | `2.4` | Drop repetitive / hallucinated decodes. |
+| `echo_suppression` | `true` | De-dup speaker bleed across mic + loopback (only with `capture_microphone`). |
+
+> `backend` is no longer needed — local Whisper is the only engine.
+
+**`triggers`** — topic routing
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `client_topics` | – | List of `{pattern: <regex>, action: research\|sizing}` — nudges matching topics into a pipeline. |
+| `consultant_hedges` | 6 defaults | Phrases ("let me confirm…") that flag a follow-up to research. |
+
+**`grounding`** — where research looks
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `repo_paths` | `.github/instructions/` | Workspace folders searched for grounding context. |
+| `microsoft_learn` | `true` | Query the Microsoft Learn API. |
+| `extra_trusted_domains` | – | `{host: weight}` to add / re-weight verified web sources without editing code. |
+
+**`output` / `notifications`**
+
+| Key | Default | What it does |
+|-----|---------|--------------|
+| `output.auto_save` | `true` | Save summary + deliverables on stop. |
+| `output.include_session_summary` | `true` | Include the session summary in the pack. |
+| `notifications.sound` | `chime` | `silent` / `chime` / `asterisk` / `exclamation` / `beep`. |
+
+**Global (not per-profile).** LLM model chains are defined in code. Override a
+tier without editing anything via an env var in `~/.sidekick/.env`, e.g.
+`SIDEKICK_MODEL_DEEP="copilot:claude-opus-4.8,copilot:gpt-4.1"`.
+
+---
+
 ## Verify (optional)
 
 Paste these into PowerShell to confirm everything is working:
@@ -105,7 +210,6 @@ The default model is `small.en` (~470MB, ~5-7% WER). Override per-customer in `c
 ```yaml
 myproject:
   speech:
-    backend: whisper        # only supported value
     model: medium.en        # base.en | small.en | medium.en | large-v3
     compute_type: int8      # int8 | int8_float16 | float16 | float32
 ```

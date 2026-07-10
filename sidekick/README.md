@@ -33,7 +33,7 @@ Then run `sidekick init` once to scaffold config and install the notification ex
 ### Option C: From source (development)
 
 ```powershell
-cd repo/sidekick
+cd sidekick
 python -m venv .venv; .\.venv\Scripts\Activate.ps1
 pip install -e ".[all]"
 sidekick init
@@ -57,7 +57,7 @@ The token refreshes every 30 minutes during long sessions.
 |------|---------------------|---------|--------------------------|
 | `fast` | gpt-4o-mini | Classifier | gpt-4.1-mini |
 | `standard` | claude-sonnet-4.5 | Research, Suggest | gpt-4.1-mini |
-| `deep` | claude-opus-4.7 | Prototype, Complex research | DeepSeek-R1 |
+| `deep` | claude-opus-4.8 | Prototype, Complex research | DeepSeek-R1 |
 
 All tiers retry with exponential backoff (1s → 2s → 4s) and fall through the chain on 429/5xx.
 
@@ -120,7 +120,7 @@ All tiers retry with exponential backoff (1s → 2s → 4s) and fall through the
 └─────────────────────────────────────────────────────────────────────┘
 
   LLM: GitHub Copilot API (zero cost) → GitHub Models (fallback)
-  Models: gpt-4o-mini │ Claude Sonnet 4.5 │ Claude Opus 4.7
+  Models: gpt-4o-mini │ Claude Sonnet 4.5 │ Claude Opus 4.8
 ```
 
 1. **Captures** system audio via WASAPI loopback (Teams, Zoom, Meet)
@@ -131,6 +131,11 @@ All tiers retry with exponential backoff (1s → 2s → 4s) and fall through the
 6. **Auto-stops** after 60s of silence
 
 The `research` tool is for manual ad-hoc questions — the loop handles everything heard on the call.
+
+> By default (`accuracy_mode: true`) a periodic deep-tier **adjudicator** re-ranks
+> the classifier's candidates and surfaces only the few most relevant findings, so
+> the feed stays focused. Set `accuracy_mode: false` for the raw high-recall path
+> shown in the diagram above.
 
 ---
 
@@ -184,16 +189,18 @@ Single-file system at `~/.sidekick/customers.yaml`. Profiles deep-merge over `de
 ```yaml
 acme:
   customer: Acme Corp
-  participants:
-    consultant: ["Your Name"]
-  domains: [Microsoft Fabric, Data Warehousing]
-  sensitivity:
-    trigger_threshold: 0.6
+  consultant: Your Name
+  domains: [Microsoft Fabric, Data Warehousing]   # override the defaults for your field
+  glossary: [OneLake, Contoso Analytics]          # proper nouns to transcribe correctly
   triggers:
     client_topics:
       - pattern: "migration|cutover|timeline"
         action: research
 ```
+
+`accuracy_mode` and `auto_suggest` are **on by default** (from `default.yaml`); set
+them `false` in a profile to opt out. See [INSTALL.md](INSTALL.md#configuration)
+for the full toggle reference.
 
 Config search order: `$SIDEKICK_CONFIG_DIR/` → `~/.sidekick/customers.yaml` → `~/.sidekick/configs/` → package `default.yaml`.
 

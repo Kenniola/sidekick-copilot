@@ -7,6 +7,9 @@ description: "Default configuration - template for new customers"
 consultant: []               # Add your name: "Your Name" or ["Name1", "Name2"]
 client: ["*"]
 
+# Default domain focus. A SOFT PRIOR that biases speech-to-text vocabulary and
+# research/analyst context — NOT a filter (Sidekick still handles any topic).
+# Override per profile for your field, e.g. domains: [Security, AWS].
 domains:
   - Microsoft Fabric
   - Power BI
