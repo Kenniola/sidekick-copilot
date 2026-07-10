@@ -18,6 +18,13 @@ sensitivity:
   analyst_interval_seconds: 10
   verify_consultant_answers: true
   show_verifications: corrections_only
+  # Two-stage accuracy pipeline (fast per-chunk detector -> periodic deep-tier
+  # adjudicator). On by default: higher precision and fewer, better findings,
+  # at the cost of a little latency. Set to false on a profile to opt out.
+  accuracy_mode: true
+  # Proactive advisor: occasionally surface one high-impact question to ask the
+  # client, shown in the feed as an [ask] card. Set false to disable.
+  auto_suggest: true
 
 queue:
   fast_lane_max: 3
@@ -64,31 +71,13 @@ notifications:
   sound: chime
 
 speech:
-  backend: whisper                     # local Whisper is the only supported backend
   language: en-GB                      # informational (Whisper uses "en")
   model: small.en                      # base.en | small.en | medium.en | large-v3
   compute_type: int8                   # int8 | int8_float16 | float16 | float32
 
-# LLM model fallback chains per tier (global — not per-customer).
-# Each entry is "provider:model"; the first is tried first, the rest are
-# fallbacks. Providers: copilot (Copilot API) | github_models (GitHub Models).
-# Quick override without editing this file: set SIDEKICK_MODEL_<TIER>, e.g.
+# LLM model fallback chains are defined in code (config.ModelsConfig / llm.py).
+# Override per tier without editing code via SIDEKICK_MODEL_<TIER>, e.g.
 #   SIDEKICK_MODEL_DEEP="copilot:claude-opus-4.8,copilot:gpt-4.1"
-models:
-  fast:                                # classifier, quick decisions
-    - copilot:gpt-4o-mini
-    - github_models:gpt-4.1-mini
-  standard:                            # research, synthesis, suggest
-    - copilot:claude-opus-4.8
-    - copilot:claude-sonnet-4.5
-    - copilot:gpt-4.1
-    - github_models:gpt-4.1-mini
-  deep:                                # complex research, prototypes
-    - copilot:claude-opus-4.8
-    - copilot:claude-opus-4.7
-    - copilot:claude-opus-4.6
-    - copilot:gpt-4.1
-    - github_models:DeepSeek-R1
 
 rules:
   - Always distinguish GA vs Preview features

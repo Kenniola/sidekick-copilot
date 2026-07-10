@@ -66,12 +66,14 @@ acme:
   #   - De-risk the F64 capacity sizing for the overnight Spark load
   #   - Land the S3 shortcut PoC with the client's security team
 
-  # Accuracy pipeline (Phase 1). Two-stage: a fast per-chunk detector feeds a
-  # periodic deep-tier adjudicator that surfaces only the few most relevant
-  # questions — trading a little latency for higher precision and far fewer
-  # notifications. All off by default.
+  # Accuracy pipeline. `accuracy_mode` and `auto_suggest` are ON by default
+  # (from the bundled default.yaml). Uncomment to tune, or set false to opt out
+  # for this profile. Two-stage: a fast per-chunk detector feeds a periodic
+  # deep-tier adjudicator that surfaces only the few most relevant questions.
   # sensitivity:
-  #   accuracy_mode: true               # enable the two-stage pipeline
+  #   accuracy_mode: true               # two-stage detector -> adjudicator (default: true)
+  #   auto_suggest: true                # proactive [ask] questions (default: true)
+  #   auto_suggest_interval_seconds: 120  # min gap between suggestions
   #   adjudicator_interval_seconds: 40  # deep-pass cadence ceiling (lower = snappier)
   #   adjudicator_pause_flush: true     # surface urgent hedges without waiting the interval
   #   max_surfaced_per_pass: 3          # hard cap on items surfaced per pass
